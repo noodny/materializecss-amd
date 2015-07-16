@@ -81,7 +81,7 @@ gulp.task('build', function() {
 
 gulp.task('build:min', function() {
     return gulp.src('./main.js')
-        .pipe(optimize(extend(config, {
+        .pipe(optimize(extend({}, config, {
             out: 'materialize.amd.min.js',
             optimize: 'uglify2',
             preserveLicenseComments: false
