@@ -1,0 +1,22 @@
+{
+    "name": "materializecss-amd",
+    "version": "0.0.1",
+    "homepage": "https://github.com/noodny/materializecss-amd",
+    "authors": [
+        "kjakubik <krzysiek.jakubik@gmail.com>"
+    ],
+    "license": "MIT",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "dependencies": {
+        "jasmine": "~2.3.4",
+        "jasmine2-junit": "https://github.com/sandermak/jasmine2-junit.git",
+        "materialize": "~0.97.0",
+        "requirejs": "~2.1.19"
+    }
+}

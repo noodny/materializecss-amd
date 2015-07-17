@@ -1,0 +1,14 @@
+<script type="text/javascript" src="../../bower_components/requirejs/require.js"></script>
+<script type="text/javascript">
+    require.config({
+        paths: {
+            'materialize': '../../dist/materialize.amd',
+            'jquery': '../../bower_components/jquery/dist/jquery'
+        },
+        shim: {
+            'materialize': {
+                deps: ['jquery']
+            }
+        }
+    });
+</script>

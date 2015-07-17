@@ -1,81 +1,18 @@
 var gulp = require('gulp'),
     extend = require('extend'),
-    optimize = require('gulp-requirejs-optimize');
+    del = require('del'),
+    fs = require('fs'),
+    optimize = require('gulp-requirejs-optimize'),
+    jasmine = require('gulp-jasmine2-phantomjs'),
+    sequence = require('gulp-sequence'),
+    config = require('./config.js');
 
-var config = {
-    baseUrl: 'bower_components/materialize/js',
-    out: 'materialize.amd.js',
-    paths: {
-        'jquery': '../../jquery/dist/jquery',
-        'animation': 'animation',
-        'buttons': 'buttons',
-        'cards': 'cards',
-        'character_counter': 'character_counter',
-        'collapsible': 'collapsible',
-        'picker': 'date_picker/picker',
-        'picker.date': 'date_picker/picker.date',
-        'dropdown': 'dropdown',
-        'forms': 'forms',
-        'global': 'global',
-        'hammerjs': 'hammer.min',
-        'jquery.easing': 'jquery.easing.1.3',
-        'jquery.hammer': 'jquery.hammer',
-        'jquery.timeago': 'jquery.timeago.min',
-        'leanModal': 'leanModal',
-        'materialbox': 'materialbox',
-        'parallax': 'parallax',
-        'pushpin': 'pushpin',
-        'scrollFire': 'scrollFire',
-        'scrollspy': 'scrollspy',
-        'sideNav': 'sideNav',
-        'slider': 'slider',
-        'tabs': 'tabs',
-        'toasts': 'toasts',
-        'tooltip': 'tooltip',
-        'transitions': 'transitions',
-        'velocity': 'velocity.min',
-        'waves': 'waves'
-    },
-    shim: {
-        'jquery': {exports: '$'},
-        'animation': ['jquery'],
-        'buttons': ['jquery'],
-        'cards': ['jquery'],
-        'character_counter': ['jquery'],
-        'collapsible': ['jquery'],
-        'dropdown': ['jquery'],
-        'forms': ['jquery', 'global'],
-        'global': {deps: ['jquery'], exports: 'Materialize'},
-        'jquery.easing': ['jquery'],
-        'jquery.hammer': ['jquery', 'hammerjs', 'waves'],
-        'jquery.timeago': ['jquery'],
-        'leanModal': ['jquery'],
-        'materialbox': ['jquery'],
-        'parallax': ['jquery'],
-        'pushpin': ['jquery'],
-        'scrollFire': ['jquery', 'global'],
-        'scrollspy': ['jquery'],
-        'sideNav': ['jquery'],
-        'slider': ['jquery'],
-        'tabs': ['jquery'],
-        'toasts': ['global'],
-        'tooltip': ['jquery'],
-        'transitions': ['jquery', 'scrollFire'],
-        'waves': {exports: 'Waves'}
-    },
-    optimize: 'none',
-    exclude: ['jquery'],
-    include: ['global', 'animation', 'buttons', 'cards', 'character_counter',
-        'collapsible', 'dropdown', 'forms', 'hammerjs', 'jquery.easing',
-        'jquery.hammer', 'jquery.timeago', 'leanModal', 'materialbox',
-        'parallax', 'picker', 'picker.date', 'pushpin', 'scrollFire',
-        'scrollspy', 'sideNav', 'slider', 'tabs', 'toasts', 'tooltip',
-        'transitions', 'velocity', 'waves']
-};
-
-gulp.task('build', function() {
+gulp.task('build:default', function() {
     return gulp.src('./main.js')
-        .pipe(optimize(config))
+        .pipe(optimize(extend({}, config, {
+            optimize: 'none',
+            out: 'materialize.amd.js'
+        })))
         .pipe(gulp.dest('./dist'));
 });
 
@@ -89,4 +26,33 @@ gulp.task('build:min', function() {
         .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('default', ['build', 'build:min']);
+gulp.task('test:prepare', function() {
+    var specs = fs.readdirSync('test/src'),
+        commonTpl = fs.readFileSync('test/src/common.html', {encoding: 'utf-8'});
+
+    specs.forEach(function(spec) {
+        if(fs.statSync('test/src/' + spec).isDirectory()) {
+            var specTpl = fs.readFileSync('test/src/' + spec + '/index.html', {encoding: 'utf-8'}),
+                template = commonTpl + specTpl + '<script type="text/javascript" src="../specs/' + spec + '.js"></script>';
+
+            try {
+                fs.mkdirSync('test/dist');
+            } catch(e) {}
+
+            fs.writeFileSync('test/dist/' + spec + '.html', template, {encoding: 'utf-8'});
+        }
+    });
+});
+
+gulp.task('test:run', function() {
+    return gulp.src('test/dist/*.html')
+        .pipe(jasmine());
+});
+
+gulp.task('test:cleanup', function() {
+    del(['test/dist', 'TEST-*.xml']);
+});
+
+gulp.task('build', ['build:default', 'build:min']);
+gulp.task('test', sequence('test:prepare', 'test:run', 'test:cleanup'));
+gulp.task('default', sequence('build', 'test'));
