@@ -7,11 +7,12 @@
     ],
     "license": "MIT",
     "ignore": [
-        "**/.*",
         "node_modules",
         "bower_components",
         "test",
-        "tests"
+        "tests",
+        "dist",
+        "TEST-*.xml"
     ],
     "dependencies": {
         "jasmine": "~2.3.4",
