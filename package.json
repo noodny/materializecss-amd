@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "Build materializecss for requirejs",
     "scripts": {
-        "prestart": "bower install",
+        "prestart": "node_modules/bower/bin/bower install",
         "start": "gulp",
         "test": "gulp"
     },
