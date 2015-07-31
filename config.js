@@ -19,6 +19,7 @@ module.exports = {
         'dropdown': {deps: ['jquery']},
         'forms': {deps: ['jquery', 'global']},
         'global': {deps: ['jquery'], exports: 'Materialize'},
+        'hammerjs': {},
         'jquery.easing': {deps: ['jquery']},
         'jquery.hammer': {deps: ['jquery', 'hammerjs', 'waves']},
         'jquery.timeago': {deps: ['jquery']},
@@ -31,7 +32,12 @@ module.exports = {
         'sideNav': {deps: ['jquery']},
         'slider': {deps: ['jquery']},
         'tabs': {deps: ['jquery']},
-        'toasts': ['global'],
+        'toasts': {
+            deps: ['global', 'hammerjs', 'velocity'], init: function(Materialize, Hammer, Vel) {
+                window.Hammer = Hammer;
+                window.Vel = Vel;
+            }
+        },
         'tooltip': {deps: ['jquery']},
         'transitions': {deps: ['jquery', 'scrollFire']},
         'waves': {exports: 'Waves'}
